@@ -3,7 +3,7 @@ import { verifyToken } from "@/app/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("mm_session")?.value;
+    const token = request.cookies.get("master_market_session")?.value;
 
     if (!token) {
       return NextResponse.json(

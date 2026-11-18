@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import pool from "@/app/lib/db";
+import { ResultSetHeader } from "mysql2";
+import { createSessionToken, SessionUser } from "@/app/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,16 +20,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { success: false, message: "Enter a valid email address." },
+        { success: false, message: "Password must be at least 8 characters." },
         { status: 400 }
       );
     }
 
-    if (password.length < 8) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json(
-        { success: false, message: "Password must be at least 8 characters." },
+        { success: false, message: "Enter a valid email address." },
         { status: 400 }
       );
     }
@@ -36,41 +38,51 @@ export async function POST(request: NextRequest) {
       requestedRole === "creator" ? "creator" : "customer";
 
     const [existing]: any = await pool.execute(
-      "SELECT user_id FROM `User` WHERE email = ? LIMIT 1",
+      "SELECT user_id FROM users WHERE email = ? LIMIT 1",
       [email]
     );
 
     if (existing.length > 0) {
       return NextResponse.json(
-        { success: false, message: "Email already registered." },
+        { success: false, message: "This email is already registered." },
         { status: 409 }
       );
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const [result]: any = await pool.execute(
-      `INSERT INTO \`User\`
-       (name, email, password, role)
+    const [result] = await pool.execute<ResultSetHeader>(
+      `INSERT INTO users (name, email, password, role)
        VALUES (?, ?, ?, ?)`,
       [name, email, hashedPassword, role]
     );
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: "Registration successful.",
-        user: {
-          user_id: result.insertId,
-          name,
-          email,
-          role,
-        },
-      },
-      { status: 201 }
-    );
-  } catch (error: any) {
-    console.error("Register error:", error);
+    const user: SessionUser = {
+      user_id: result.insertId,
+      name,
+      email,
+      role,
+    };
+
+    const token = await createSessionToken(user);
+
+    const response = NextResponse.json({
+      success: true,
+      message: "Registration successful.",
+      user,
+    });
+
+    response.cookies.set("master_market_session", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Registration error:", error);
 
     return NextResponse.json(
       { success: false, message: "Registration failed." },

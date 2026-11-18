@@ -6,7 +6,7 @@ export async function POST() {
     message: "Logged out successfully.",
   });
 
-  response.cookies.set("mm_session", "", {
+  response.cookies.set("master_market_session", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
