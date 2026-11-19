@@ -440,7 +440,7 @@ export default function Home() {
           <p className="text-xs font-bold uppercase tracking-widest text-[#9c5261]">For digital creators</p>
           <h2 className="mt-3 text-3xl font-black md:text-4xl">Turn Your Creativity Into Opportunity.</h2>
           <p className="mt-5 leading-8 text-[#88777a]">Share your creativity with the world. Master Market provides a platform where creators can showcase their digital products and reach customers.</p>
-          <button onClick={() => setShowCreator(true)} className="mt-7 rounded-full bg-[#76263d] px-7 py-4 text-sm font-bold text-white hover:bg-[#5e1c30]">
+          <button onClick={() => (window.location.href = "/creator/dashboard")} className="mt-7 rounded-full bg-[#76263d] px-7 py-4 text-sm font-bold text-white hover:bg-[#5e1c30]">
             Become a Creator →
           </button>
         </div>
@@ -620,11 +620,11 @@ export default function Home() {
           <div className="w-full max-w-lg rounded-3xl bg-[#fffaf5] p-8">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black">Creator Dashboard</h2>
-              <button onClick={closeModals} className="text-2xl">×</button>
+              <button onClick={closeModals} className="text-2xl"></button>
             </div>
 
             <p className="mt-3 text-sm leading-7 text-[#88777a]">
-              Welcome to the creator area. This demo dashboard introduces the tools creators can use to manage their digital products.
+              Welcome to the creator area. This dashboard introduces the tools creators can use to manage their digital products.
             </p>
 
             <div className="mt-6 grid grid-cols-2 gap-4">

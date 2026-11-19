@@ -161,9 +161,16 @@ export default function CreatorDashboardPage() {
     <main className="min-h-screen bg-[#faf6ef] text-[#38201f]">
       <header className="bg-[#4b171d] px-6 py-5 text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Master Market</h1>
-            <p className="text-sm text-[#e8d4bd]">Creator Dashboard</p>
+          <div><a
+            href="#"
+            className="brand-font text-xl font-black tracking-wider text-[#f5e6cc] md:text-2xl"
+          >
+            MASTER <span className="text-[#d9b77e]">MARKET.</span>
+          </a>
+            
+            <p className="text-xs uppercase text-[#fff5e6] transition hover:text-[#d9b77e]">
+              Welcome Back, Creator! let's build something amazing.
+            </p>
           </div>
 
           <a
