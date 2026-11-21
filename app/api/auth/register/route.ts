@@ -8,10 +8,10 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const name = String(body.name || "").trim();
-    const email = String(body.email || "").trim().toLowerCase();
-    const password = String(body.password || "");
-    const requestedRole = String(body.role || "customer").toLowerCase();
+    const name = String(body.name ?? "").trim();
+    const email = String(body.email ?? "").trim().toLowerCase();
+    const password = String(body.password ?? "");
+    const requestedRole = String(body.role ?? "customer").toLowerCase();
 
     if (!name || !email || !password) {
       return NextResponse.json(
@@ -34,8 +34,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const role =
-      requestedRole === "creator" ? "creator" : "customer";
+    if (!["customer", "creator"].includes(requestedRole)) {
+      return NextResponse.json(
+        { success: false, message: "Invalid account type." },
+        { status: 400 }
+      );
+    }
+
+    const role = requestedRole as "customer" | "creator";
 
     const [existing]: any = await pool.execute(
       "SELECT user_id FROM users WHERE email = ? LIMIT 1",
